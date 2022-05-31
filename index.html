@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>R + Markdown: automatización desde   un mail a una tesis         </title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Richard Detomasi y Gabriela Mathieu " />
+    <script src="index_files/header-attrs/header-attrs.js"></script>
+    <link href="index_files/remark-css/default.css" rel="stylesheet" />
+    <link href="index_files/remark-css/default-fonts.css" rel="stylesheet" />
+    <link href="index_files/remark-css/rladies-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# R + Markdown: automatización desde <br> un mail a una tesis<br><br>
+<img src="img_plot/Rlogo.png" style="width:8.0%" />   <img
+src="img_plot/RStudio-Logo-Flat.png" style="width:18.0%" />   <img
+src="img_plot/rmarkdown.png" style="width:6.0%" />
+### Richard Detomasi y Gabriela Mathieu<br>
+### <span>&lt;style=‘font-size: 80%;’&gt; FCS - Educación Permanente
+<br> Taller ggplot<br><br>
+</style>
+</span> <img src="img_plot/cc-by-sa.png" />
+
+---
+
+
+
+
+
+# ¿Qué haremos hoy?
+
+- Tipos de gráficos
+&lt;br&gt;&lt;br&gt;
+--
+
+- Introducción al paquete &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot2&lt;/span&gt;
+&lt;br&gt;&lt;br&gt;
+--
+
+- Gráficos interactivos: &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;plotly&lt;/span&gt; con &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot2&lt;/span&gt;
+&lt;br&gt;&lt;br&gt;
+--
+
+- Extensiones a ggplot2
+&lt;br&gt;&lt;br&gt;
+--
+
+- Mapas estáticos con sf y ggplot2
+&lt;br&gt;&lt;br&gt;
+--
+
+- Mapas interactivos con leaflet
+
+---
+# Recursos recomendados
+
+- [El libro de ggplot2](https://ggplot2-book.org/)
+&lt;br&gt;&lt;br&gt;
+- [Listado de funciones](https://ggplot2.tidyverse.org/reference/)
+&lt;br&gt;&lt;br&gt;
+- [Fundamentals of data visualization](https://clauswilke.com/dataviz/index.html)
+&lt;br&gt;&lt;br&gt;
+- [Tutorial](http://r-statistics.co/ggplot2-Tutorial-With-R.html)
+&lt;br&gt;&lt;br&gt;
+- [R charts](https://r-charts.com/)
+&lt;br&gt;&lt;br&gt;
+- [R graph gallery](https://r-graph-gallery.com/ggplot2-package.html)
+&lt;br&gt;&lt;br&gt;
+- [Paletas de colores](https://grafify-vignettes.netlify.app/colour_palettes.html)
+
+---
+# Tipos de gráficos
+
+| Gráfico | Descripción | x | y |
+|---------|-------------|---|---|
+|**histograma** (histogram)| distribución de una variable cuantitativa | sí | no |
+|**densidad** (density)| distribución de una variable cuantitativa |sí |no|
+|**dispersión** (scatter)| correlación entre 2 variables |sí |sí |
+| **barra** (bar) | frecuencias de una variable categórica | sí| no |
+| **barra** (grouped bar) | frecuencias de una v. categórica según otra categórica | sí| sí |
+| **líneas** (lines) | evolución de una variable a través del tiempo | sí| sí |
+| **caja** (box) | dispersión de los valores de una variable | sí|  no|
+| **circular** (pie) | frecuencias de una variable categórica | sí| no |
+
+y muchos más... [ejemplos de gráficos en R](https://www.r-graph-gallery.com/ggplot2-package.html)
+
+
+---
+class: inverse, center, middle
+# ggplot2
+
+---
+# Gramática de gráficos
+
+- La &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;gramática del lenguaje&lt;/span&gt; nos ayuda a construir frases con sentido a partir de las palabras.
+&lt;br&gt;&lt;br&gt;
+--
+
+- La &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;gramática de los gráficos&lt;/span&gt; nos ayuda a construir figuras gráficas a partir de diferentes elementos visuales.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Se puede pensar cada &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;gráfico&lt;/span&gt; como un &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;conjunto de capas de imágenes&lt;/span&gt;, donde la apariencia de cada imagen se basa en algún aspecto del conjunto de datos.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Fue desarrollada originalmente por Leland Wilkinson y luego adaptada por Hadley Wickham para describir los componentes de un gráfico.
+
+---
+# Gramática de gráficos
+
+.left-column[
+
+![](img_plot/gg.png)
+
+]
+
+.right-column[
+&lt;br&gt;
+ggplot2 permite hacer los gráficos por &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;capas&lt;/span&gt;, es decir, elementos que se van agregando. Hay diferentes capas pero existen &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;3 fundamentales&lt;/span&gt; para hacer gráficos,
+&lt;br&gt;&lt;br&gt;
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;data&lt;/span&gt;: el data frame que contiene las variables que vamos a graficar
+&lt;br&gt;&lt;br&gt;
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;aesthetics mapping&lt;/span&gt;: las variables que vamos a graficar y en dónde (x, y)
+&lt;br&gt;&lt;br&gt;
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geometry&lt;/span&gt;: el tipo de gráfico que haremos (puntos, líneas, barras, etc.)
+&lt;br&gt;&lt;br&gt;
+- **capas adicionales** para mejorar el gráfico (título, etiqueta, nombres de ejes, tamaño de letras, etc.)
+
+]
+
+---
+# Capas
+
+
+| Elemento      | Descripción          | Función | 
+|---------------|:-------------:|:------:|
+|Data |Set de datos a plotear | ggplot() |
+|Aesthetics | Variables a mapear | aes() |
+|Geometry | El tipo de gráfico a realizar| geom_*() |
+|Facets  | Para ploteos múltiples| facet_*() |
+|Statistics | Transforma las variables (count, density, etc.)| stat_*() |
+|Scales | Para cambiar las propiedades de todas las dimensiones estéticas asignadas a los datos | scale_*()
+|Coordinate | Cartesianas, polares, etc. | coord_*() |
+|Themes  | Estilos de gráficos | theme_*()|
+
+[Listado de funciones](https://ggplot2.tidyverse.org/reference/)
+
+
+---
+# Capas fundamentales
+![](img_plot/gg_data_mapping_geoms.png)
+
+- Las 3 primeras capas deben ser en este orden: `data`, `aesthetics`, `geometry`
+&lt;br&gt;&lt;br&gt;
+--
+
+- Las capas se van superponiendo con un `+`
+&lt;br&gt;&lt;br&gt;
+--
+
+- La estructura básica es como esta:
+
+&lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot&lt;/span&gt;(data = &lt;span style=" font-weight: bold;    color: deeppink !important;" &gt;&amp;lt;df&amp;gt;&lt;/span&gt;) &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;+&lt;/span&gt;
+
+   &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;aes&lt;/span&gt;(x = &lt;span style=" font-weight: bold;    color: deeppink !important;" &gt;&amp;lt;Variable_1&amp;gt;&lt;/span&gt;, y = &lt;span style=" font-weight: bold;    color: deeppink !important;" &gt;&amp;lt;Variable_2&amp;gt;&lt;/span&gt;) &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;+&lt;/span&gt;
+   
+   &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geom_*&lt;/span&gt;()  
+
+donde * debe reemplazarse por el tipo de gráfico que corresponda (bar, points, etc.)
+
+---
+class: inverse, center, middle
+# ggplot2::geom_point()
+
+
+---
+# Elementos de un gráfico
+
+Para crear un &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;gráfico&lt;/span&gt; es necesario:
+
+- Llamar a la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot()&lt;/span&gt; que crea un lienzo en blanco y se especifica el &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;data frame&lt;/span&gt; a utilizar.
+--
+
+- Especificar las &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;variables&lt;/span&gt; a mapear (deben ser columnas del data frame) en los ejes x e y con la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;aes()&lt;/span&gt;.
+--
+
+- Agregar una tercera capa con los objetos geométricos que se mostrarán en el gráfico. Por ejemplo, con la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geom_point()&lt;/span&gt; para representar los datos como &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;puntos&lt;/span&gt;.
+  
+&lt;img src="index_files/figure-html/unnamed-chunk-2-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+# Ejemplo mínimo: ggplot + aes
+
+.pull-left[
+
+```r
+# Cargo el paquete ggplot2 y los datos de berlin
+library(ggplot2)
+load("data/berlin.Rdata")
+
+ggplot(data = berlin) +
+  aes(x = number_of_reviews, 
+      y = price)
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-4-1.png)&lt;!-- --&gt;
+
+]
+
+
+---
+# Ejemplo mínimo: ggplot + aes + geom
+
+
+.pull-left[
+
+```r
+ggplot(data = berlin) +
+  aes(x = number_of_reviews, 
+      y = price) +
+* geom_point()
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+]
+
+---
+# Ejemplo mínimo: color y transparencia
+
+.pull-left[
+
+```r
+ggplot(data = berlin) +
+  aes(x = number_of_reviews, 
+      y = price) +
+* geom_point(color = "purple",
+*            alpha = 0.7)
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+]
+---
+# Un error común
+
+.pull-left[
+
+```r
+ggplot(data = berlin) +
+  aes(x = number_of_reviews, 
+      y = price,
+*     color = "purple")  +
+  geom_point() 
+```
+
+- En &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;aes()&lt;/span&gt; se definen los parámetros estéticos de las variables.
+&lt;br&gt;&lt;br&gt;
+- Aquellos que son fijos como **color = "red"**, **fill = "blue"**, etc. se escriben afuera de aes(). Salvo que el color dependa de una variable...
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+
+---
+# Coloreo puntos según variable
+
+- Se pueden colorear los puntos en función de otra variable.
+
+.pull-left[
+
+
+```r
+ggplot(data = berlin) +
+  aes(x = number_of_reviews, 
+      y = price,
+*     color = room_type) +
+  geom_point()  
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+]
+
+---
+# Combino dplyr con ggplot2
+
+La media de precios es 67.143668 euros, la mediana 45, el máximo 9000. Outliers!!!
+
+Vamos a quitar esos alojamientos carísimos y aquellos que no tienen dato en el puntaje de evaluación.
+
+
+```r
+library(dplyr)
+berlin_nout &lt;- berlin %&gt;% 
+  filter(!is.na(number_of_reviews)) %&gt;%
+  filter(price &lt; 2000)
+```
+
+
+
+```r
+berlin_nout %&gt;% 
+   ggplot(aes(x = number_of_reviews, y = price)) +
+  geom_point()
+```
+
+---
+# Múltiples geometrías en un mismo gráfico
+
+Lo que lo hace realmente potente es que se pueden añadir múltiples geometrías a un gráfico. Volvemos a un gráfico anterior y agregamos una línea suavizada para mostrar la tendencia aproximada de los puntos.
+
+.pull-left[
+
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price) + 
+* geom_point() +
+* geom_smooth()
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+]
+
+---
+# Múltiples geometrías
+
+
+.pull-left[
+Especificamos un color para cada geometría
+
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price) + 
+* geom_point(color = "blue") +
+* geom_smooth(color = "red")
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+]
+
+
+---
+# Misma estética para todas las geometrías
+
+
+Si especificamos una estética dentro de ggplot(aes()) se pasará a cada geom que le siga.
+
+.pull-left[
+
+
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price,
+*     color = room_type) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+]
+
+---
+# Una estética para cada geometría
+
+Podemos especificar una estética para una geometría en particular incluyendo la función  &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;aes() dentro de geom_*():&lt;/span&gt;
+ 
+ .pull-left[
+
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price) + 
+  geom_point(aes(color = room_type)) +
+  geom_smooth(se = FALSE)
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+]
+
+
+---
+class: inverse, center, middle
+# ggplot2::facet_*()
+
+---
+# Gráficos múltiples
+
+.pull-left[
+
+```r
+berlin %&gt;% 
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price)  + 
+  geom_point() +
+* facet_wrap(~room_type)
+```
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+]
+
+---
+# Ejercicio
+
+- Trabajar únicamente con los barrios Mitte, Pankow y Neukölln, realizar un diagrama de dispersión entre el precio y la evaluación.
+&lt;br&gt;&lt;br&gt;
+- Colorear los puntos según room_type.
+&lt;br&gt;&lt;br&gt;
+- Realiza este mismo gráfico usando &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;facet_wrap()&lt;/span&gt;.
+
+---
+# Agrega título y nombre a ejes
+
+.pull-left[
+
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price,
+      color = room_type) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+* labs(x = 'Evaluación',
+*      y = 'Precio mediano',
+*      title = 'Alojamientos en Berlin de Airbnb')
+```
+
+]
+.pull-right[
+
+![](index_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+
+]
+
+---
+class: inverse, center, middle
+# ggplot:theme_*()
+
+
+---
+# Temas
+
+- La función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;theme_*()&lt;/span&gt; controla el estilo del gráfico, permite definir el color de fondo, la apariencia de la leyenda, tamaños de letra, etc.
+&lt;br&gt;&lt;br&gt;
+- Vienen predefinidos una variedad de temas pero también se puede instalar un paquete con más temas `ggthemes`.
+&lt;br&gt;&lt;br&gt;
+- Explorar otros [temas](https://ggplot2.tidyverse.org/reference/ggtheme.html).
+&lt;br&gt;&lt;br&gt;
+- Cambiamos el &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;fondo a color blanco&lt;/span&gt; al elegir el tema 'bw'
+&lt;br&gt;&lt;br&gt;
+- También hay paquetes específicos que traen otros temas: `ggthemr`, `hrbrthemes`, `ggdark`, `tvthemes`.
+
+---
+# Fondo blanco
+
+.pull-left[
+
+
+```r
+berlin %&gt;%
+  filter(!is.na(number_of_reviews)) %&gt;%
+  group_by(number_of_reviews) %&gt;%
+  summarize(price = median(price)) %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price,
+      color = room_type) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(x = 'Evaluación',
+       y = 'Precio mediano', 
+       title = 'Alojamientos en Berlin de Airbnb') +
+* theme_bw()
+```
+
+]
+.pull-right[
+
+![](index_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+]
+
+---
+# Centra título
+
+
+.pull-left[
+
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price,
+      color = room_type) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+* labs(x = 'Evaluación',
+*      y = 'Precio mediano',
+       title = 'Alojamientos en Berlin de Airbnb') + 
+  theme_bw() +
+* theme(plot.title = element_text(hjust = 0.5))
+```
+
+]
+.pull-right[
+
+![](index_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+]
+
+---
+# Ejercicio
+
+- Trabajar únicamente con los barrios Mitte, Pankow y Neukölln, realizar un diagrama de dispersión entre el precio y la evaluación.
+&lt;br&gt;&lt;br&gt;
+- Colorear los puntos según room_type.
+&lt;br&gt;&lt;br&gt;
+- Realiza este mismo gráfico usando &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;facet_wrap()&lt;/span&gt;.
+
+---
+# Cambiar las propiedades de las geometrías
+
+Dentro de &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geom_*()&lt;/span&gt; es posible manipular el color, forma y tamaño de los puntos.
+
+.pull-left[
+
+```r
+berlin_nout %&gt;%
+ggplot() +
+  aes(x = number_of_reviews, 
+      y = price,
+      color = room_type) + 
+* geom_point(color = "purple",
+*            shape = "diamond", size = 2) +
+  labs(x = 'Evaluación', 
+       y = 'Precio mediano', 
+       title = 'Alojamientos en Berlin de Airbnb')
+```
+
+&lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot2&lt;/span&gt; acepta que el argumento color se escriba: **color**, **colour** o **col**
+
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+
+]
+
+---
+# Ejercicio
+
+- Grafica el precio y el puntaje de evaluación.
+&lt;br&gt;&lt;br&gt;
+- Colorea los puntos con un color específico, agrega nombre a los ejes y título.
+&lt;br&gt;&lt;br&gt;
+- Exporta el gráfico a formato pdf
+&lt;br&gt;&lt;br&gt;
+- Abre el Rmd que venimos editando y agrega el código del gráfico 2. Nombra el chunk.
+&lt;br&gt;&lt;br&gt;
+- Agrega el gráfico 2 pero a partir del pdf generado. Nombra el chunk.
+&lt;br&gt;&lt;br&gt;
+- Define los parámetros de cada chunk de tal forma que no se vea el código y se evalúe.
+&lt;br&gt;&lt;br&gt;
+- Define el tamaño de las figuras: ancho y alto.
+&lt;br&gt;&lt;br&gt;
+- Modifica el código del gráfico para que no tenga título. Luego agrega el título en el chunk.
+
+
+---
+class: inverse, center, middle
+# Otras geometrías
+
+
+---
+# Otras geometrías
+
+
+- Además de los gráficos de dispersión o de puntos, también existen otras geometrías, como los &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;gráficos de barras&lt;/span&gt;, por ejemplo.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Para trabajar con este tipo de gráfico tendremos que adecuar la base de datos.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Para hacer un gráfico de barras necesitamos generar un data frame con información resumida para cada categoría que se quiera graficar, es decir, &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;información agregada&lt;/span&gt; a nivel de cada categoría.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Ejemplo: creamos un nuevo objeto llamado `nb` que filtra los casos para 3 barrios y calculamos el precio mediano de los alojamientos.
+
+---
+# Gráfico de barras
+
+Vamos a trabajar con un subconjunto de los datos para tener menos categorías de barrios.
+Creamos un nuevo objeto nb que contiene la mediana de precios para los barrios: Mitte, Neukölln, y Pankow.
+
+.pull-left[
+
+```r
+nb &lt;- berlin %&gt;%
+  filter(neighbourhood_group %in% c("Mitte", "Neukölln", "Pankow")) %&gt;% 
+  group_by(neighbourhood_group) %&gt;%
+  summarize(med.price = mean(price))
+
+nb %&gt;%
+  ggplot(aes(x = neighbourhood_group, y = med.price)) + 
+  geom_bar(stat = 'identity')
+```
+
+]
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
+
+]
+
+- El argumento &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;stat='identity'&lt;/span&gt; de la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geom_bar()&lt;/span&gt;, indica que la altura de la barra debe ser igual al valor y.
+
+
+---
+# Propiedades del texto del eje x
+
+.pull-left[
+
+```r
+nb %&gt;%
+  ggplot() +
+  aes(x = neighbourhood_group, y = med.price) +
+  geom_bar(stat = 'identity') +
+* theme(axis.text.x = element_text(angle = 60,
+*                                  hjust = 1))
+```
+
+La función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;element_text()&lt;/span&gt; la llamo dentro de &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;theme()&lt;/span&gt;, debo especificar a qué elemento de texto quiero modificar: &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;axis.text.x&lt;/span&gt;.
+
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-36-1.png)&lt;!-- --&gt;
+]
+
+---
+# Reordeno las categorías de menor a mayor
+
+La función reorder() reordena las categorías de una variable según los valores de una variable numérica.
+
+El argumento de geom_bar, stat='identity', indica que la altura de la barra debe ser igual al valor y.
+
+.pull-left[
+
+```r
+nb %&gt;%
+  ggplot() +
+* aes(x = reorder(neighbourhood_group, med.price),
+      y = med.price) + 
+  geom_bar(fill = 'purple',
+           alpha = .7, 
+           stat = 'identity') +
+  theme(axis.text.x = element_text(angle = 60,
+                                   hjust = 1)) +
+  labs(x = '',
+       y = 'Precio promedio', 
+       title = 'Precio promedio según barrio')
+```
+
+- La función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;reorder()&lt;/span&gt; reordena las categorías de una variable según los valores de una variable numérica.
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-38-1.png)&lt;!-- --&gt;
+
+]
+
+---
+class: inverse, center, middle
+# ggplot::coord_flip()
+
+---
+# Giro el gráfico
+
+.pull-left[
+
+```r
+nb %&gt;%
+  ggplot() +
+  aes(x = reorder(neighbourhood_group, med.price), y = med.price) +
+  geom_bar(fill = 'purple', alpha = .7, stat = 'identity') +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+  labs(x = '',
+       y = 'Precio promedio', 
+       title = 'Precio promedio según barrio') +
+* coord_flip()
+```
+
+- La función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;coord_flip()&lt;/span&gt; intercambia las coordenadas cartesianas para que el eje horizontal (x) se convierta en vertical y el vertical (y) en horizontal.
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-40-1.png)&lt;!-- --&gt;
+
+]
+
+
+
+---
+# Ancho de las barras
+
+.pull-left[
+
+```r
+nb %&gt;%
+  ggplot() +
+  aes(x = reorder(neighbourhood_group, med.price), y = med.price) +
+  geom_bar(fill = 'purple', alpha = .7,
+*          stat = 'identity', width = 0.3) +
+  labs(x = '',
+       y = 'Precio promedio', 
+       title = 'Precio promedio según barrio')
+```
+
+- Con el argumento &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;width&lt;/span&gt; se especifica el grosor de la barra.
+- **width = 0.3** grafica las barras con un 30% de grosor.
+- Si no queremos separación entre las barras se debe especificar **width = 1**
+- El valor por defecto es **width = 0.9**, es decir 90%.
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-42-1.png)&lt;!-- --&gt;
+
+]
+
+
+
+---
+# Gráfico de barras agrupadas
+
+
+.pull-left[
+
+```r
+nb &lt;- berlin %&gt;%
+  filter(neighbourhood_group %in% c("Mitte", "Neukölln", "Pankow")) %&gt;% 
+  group_by(neighbourhood_group, room_type) %&gt;%
+  summarize(med.price = mean(price))
+
+nb %&gt;%
+  ggplot() +
+  aes(x = neighbourhood_group, 
+      y = med.price, fill = room_type) +
+* geom_bar(position = "dodge", stat = "identity")
+```
+
+- La opción &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;dodge&lt;/span&gt; del argumento **position** indica realizar agrupamiento horizontal de las categorías.
+
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-44-1.png)&lt;!-- --&gt;
+
+]
+
+---
+# Gráfico de barras apiladas
+
+
+.pull-left[
+
+```r
+nb %&gt;%
+  ggplot()+
+  aes(x = neighbourhood_group, y = med.price, 
+      fill = room_type) +
+  geom_bar(position = "stack", stat = "identity")
+```
+
+- La opción &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;stack&lt;/span&gt; del argumento **position** indica realizar agrupamiento vertical de las categorías, es decir, apilarlas.
+
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
+
+]
+
+
+---
+# gghighlight
+
+.pull-left[
+
+```r
+library(gghighlight)
+ggplot(berlin, aes(neighbourhood_group, number_of_reviews, fill = neighbourhood_group)) +
+  coord_flip() +
+  geom_col(width = 0.5) +
+  gghighlight(neighbourhood_group == 'Neukölln', unhighlighted_colour = "cornflowerblue") +
+  scale_fill_manual(values = c("grey")) +
+  theme_bw() +
+  theme(legend.position = 'none') +
+  labs(x = NULL, 
+       y = '# Evaluaciones',
+       title = "Cantidad de evaluaciones por barrio")
+```
+
+]
+
+.pull-right[
+![](index_files/figure-html/unnamed-chunk-48-1.png)&lt;!-- --&gt;
+
+]
+
+---
+# Escalas de colores 
+
+Se pueden escribir los colores de dos formas:
+&lt;br&gt;&lt;br&gt;
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;manual&lt;/span&gt;:
+  - por [nombre](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf),  
+  - o por [código hexadecimal](https://htmlcolorcodes.com/)
+&lt;br&gt;&lt;br&gt;  
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;automática&lt;/span&gt;: usando paletas de colores internas a ggplot2 o de otros paquetes como viridis.
+
+La paleta de colores se indica con una función del tipo `scale_colour_*()` para contorno (puntos, líneas) y `scale_fill_*()` para relleno (áreas).
+
+El asterisco debe reemplazarse por manual para indicar manualmente los colores.
+Cuando se quiere usar una paleta automática el asterisco se reemplaza por un nombre concreto. 
+
+También se admite escribir color, en vez de colour.
+
+
+---
+class: inverse, center, middle
+# ggplot::ggsave()
+
+---
+# Exportar un gráfico
+
+Es preferible el formato pdf ya que se guarda en formato vectorial y así evitamos que se pixele como puede ocurrir con los formatos png, jpg, etc.
+
+
+```r
+# pdf
+ggsave('grafico_berlin.pdf')
+
+# jpg
+ggsave('grafico_berlin.jpg')
+
+# png
+ggsave('grafico_berlin.png')
+```
+
+Podemos definir otros argumentos para variar el tamaño del gráfico, entre otras cosas. Para guardarlo en png cambiamos pdf por png.
+
+---
+# Otros paquetes gráficos
+
+- [ggpubr](https://rpkgs.datanovia.com/ggpubr/): gráficos ggplot2 para publicar 
+- todas las [extensiones](https://exts.ggplot2.tidyverse.org/gallery/) de ggplot2
+
+- plotly para realizar gráficos interactivos
+- gganimation: para hacer gráficos de ggplot2 interactivos
+
+
+- Paquetes que ofrecen variedades de paletas de colores: 
+    - viridis
+    - rcartocolor 
+    - LaCroixColoR
+    - [jcolors](https://jaredhuling.org/jcolors/)
+    - RColorBrewer
+    
+    
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
